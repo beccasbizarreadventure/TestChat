@@ -1,11 +1,9 @@
 import pg from 'pg';
 import { config } from 'dotenv';
 
-// require('dotenv').config();
-
 config();
 
-const client = new pg.Client({
+const db = new pg.Client({
   host: process.env.PGHOST,
   name: process.env.PGDATABASE,
   user: process.env.PGUSER,
@@ -15,4 +13,4 @@ const client = new pg.Client({
 });
 
 
-export default client;
+export default db;
