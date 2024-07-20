@@ -1,4 +1,9 @@
-const pg = require("pg");
+import pg from 'pg';
+import { config } from 'dotenv';
+
+// require('dotenv').config();
+
+config();
 
 const client = new pg.Client({
   host: process.env.PGHOST,
@@ -9,8 +14,5 @@ const client = new pg.Client({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
-client
-  .connect()
-  .catch(e => console.log(`Error connecting to Postgres server:\n${e}`));
 
-module.exports = client;
+export default client;
