@@ -8,13 +8,15 @@ const register = async (req, res) => {
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please fill in all fields' });
     }
+
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email in use' });
+    }
+
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
     const newUser = await registerUser(name, email, hashedPassword);
-
-    if (getUserByEmail(email)) {
-      return res.status(400).json({ message: 'Email in use' });
-    }
 
     if (newUser) {
       generateToken(newUser.id, res)
@@ -31,6 +33,7 @@ const register = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 const login = async (req, res) => { 
   try {
     const { email, password } = req.body;
@@ -69,7 +72,6 @@ const logout = async (req, res) => {
 const currentUser = async (req, res) => {
   try {
     const user = await getUserById(req.body.user_id)
-    console.log(user)
     if(!user) {
       return res.status(404).json({error:"User not found"});
     }
