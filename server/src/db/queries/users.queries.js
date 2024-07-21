@@ -14,7 +14,7 @@ const registerUser = async (name, email, password) => {
   }
 };
 
-const findUser = async (email) => {
+const getUserByEmail = async (email) => {
   try {
     const data = await client.query(
       `SELECT * FROM users 
@@ -27,4 +27,17 @@ const findUser = async (email) => {
   }
 };
 
-export {registerUser, findUser};
+const getUserById = async (id) => {
+  try {
+    const data = await client.query(
+      `SELECT * FROM users
+      WHERE id = $1`,
+      [id]
+    );
+    return data.rows[0];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export {registerUser, getUserByEmail, getUserById};

@@ -1,8 +1,8 @@
 import bcryptjs from 'bcryptjs';
 import generateToken from '../utilities/generateToken.js';
-import {registerUser, findUser} from '../db/queries/users.queries.js';
+import {registerUser, getUserByEmail, getUserById} from '../db/queries/users.queries.js';
 
-export const register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -12,7 +12,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcryptjs.hash(password, salt);
     const newUser = await registerUser(name, email, hashedPassword);
 
-    if (findUser(email)) {
+    if (getUserByEmail(email)) {
       return res.status(400).json({ message: 'Email in use' });
     }
 
@@ -31,10 +31,10 @@ export const register = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-export const login = async (req, res) => { 
+const login = async (req, res) => { 
   try {
     const { email, password } = req.body;
-    const user = await findUser(email);
+    const user = await getUserByEmail(email);
     if (user.email !== email) {
       return res.status(400).json({ message: 'Invalid email' });
     }
@@ -56,7 +56,7 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
+const logout = async (req, res) => {
   try {
     res.cookie("jwt", "", {maxAge: 0});
     res.status(200).json({message: "Logout success"});
@@ -64,4 +64,24 @@ export const logout = async (req, res) => {
     console.log("Error in login controller", error.message);
     res.status(500).json({ message: 'Server error' });
   }
- };
+};
+
+const currentUser = async (req, res) => {
+  try {
+    const user = await getUserById(req.body.user_id)
+    console.log(user)
+    if(!user) {
+      return res.status(404).json({error:"User not found"});
+    }
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email
+    });
+  } catch (error) {
+    console.log("Error in login controller", error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+ export {register, login, logout, currentUser};
