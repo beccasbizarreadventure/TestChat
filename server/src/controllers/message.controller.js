@@ -1,4 +1,4 @@
-import { findPrivateChat, createNewChat, addChatParticipants } from "../db/queries/chats.queries.js";
+import { findPrivateChat, createNewChat, addChatParticipants, findChatWithMessages } from "../db/queries/chats.queries.js";
 import { newChatMessage } from "../db/queries/messages.queries.js";
 
 export const sendMessage = async (req, res) => {
@@ -7,21 +7,52 @@ export const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.body.user_id // the user token from the protectRoute middleware
 
-    let chat = await findPrivateChat(senderId, receiverId)
+    const chat = await findPrivateChat(senderId, receiverId)
 
     if (chat) {
-     await newChatMessage(senderId, chat.id, message);
-     res.status(200).json({ message: "Message sent successfully" });
+     const newMessage = await newChatMessage(senderId, chat.id, message);
+     res.status(201).json({ 
+      message: "Message sent successfully",
+      data: {
+        chatId: chat.id,
+        newMessage: newMessage
+      } 
+    });
     }
 
     if (!chat) {
       const chatId = await createNewChat();
       const participants = [senderId, receiverId];
       await addChatParticipants(participants, chatId);
-      await newChatMessage(senderId, chatId, message);
-      res.status(201).json({ message: "New chat created and message sent successfully" });
+      const newMessage = await newChatMessage(senderId, chatId, message);
+      res.status(201).json({ 
+        message: "New chat created and message sent successfully",
+        data: {
+          chatId: chatId,
+          participants: participants,
+          newMessage: newMessage
+        }
+       });
     }
 
+    // socket.io here
+
+  } catch(error) {
+    console.error("Error in sendMessage: ", error.message); 
+    res.status(500).json({error: "Internal server error"});
+  }
+};
+
+export const getMessages = async (req,res) => {
+  try {
+    const {id: otherUserInChat } = req.params; // this loads the messages that the logged in user has with another specific user
+    const senderId = req.body.user_id;
+    const chat = await findChatWithMessages(senderId, otherUserInChat);
+
+    if (!chat || chat.length === 0) {
+      return res.status(200).json([]); // Return an empty array if no chat messages found
+    }
+    return res.status(200).json(chat);
   } catch(error) {
     console.error("Error in sendMessage: ", error.message); 
     res.status(500).json({error: "Internal server error"});
