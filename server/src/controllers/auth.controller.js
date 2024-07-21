@@ -12,6 +12,10 @@ export const register = async (req, res) => {
     const hashedPassword = await bcryptjs.hash(password, salt);
     const newUser = await registerUser(name, email, hashedPassword);
 
+    if (findUser(email)) {
+      return res.status(400).json({ message: 'Email in use' });
+    }
+
     if (newUser) {
       generateToken(newUser.id, res)
       res.status(201).json({ 
@@ -29,10 +33,8 @@ export const register = async (req, res) => {
 };
 export const login = async (req, res) => { 
   try {
-    console.log(req.body);
     const { email, password } = req.body;
     const user = await findUser(email);
-    console.log (user);
     if (user.email !== email) {
       return res.status(400).json({ message: 'Invalid email' });
     }
@@ -54,4 +56,12 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => { };
+export const logout = async (req, res) => {
+  try {
+    res.cookie("jwt", "", {maxAge: 0});
+    res.status(200).json({message: "Logout success"});
+  } catch (error) {
+    console.log("Error in login controller", error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+ };
