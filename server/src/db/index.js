@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 
 config();
 
-const db = new pg.Client({
+const client = new pg.Client({
   host: process.env.PGHOST,
   name: process.env.PGDATABASE,
   user: process.env.PGUSER,
@@ -13,4 +13,4 @@ const db = new pg.Client({
 });
 
 
-export default db;
+export default client;

@@ -1,5 +1,5 @@
-INSERT INTO USERS (ID, NAME, EMAIL, PASSWORD) 
+INSERT INTO USERS (NAME, EMAIL, PASSWORD) 
 VALUES 
-(1,'Alice', 'alice@wonderland.ca', 'password'),
-(2,'Bob', 'bob@burger.ca', 'password'),
-(3,'Charlie', 'charlie@chocolate.ca', 'password');
+('Alice', 'alice@wonderland.ca', 'password'),
+('Bob', 'bob@burger.ca', 'password'),
+('Charlie', 'charlie@chocolate.ca', 'password');
