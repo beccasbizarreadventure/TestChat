@@ -4,8 +4,11 @@ import messageRoutes from './routes/message.route.js';
 import cors from 'cors';
 import client from './db/index.js';
 import cookieParser from 'cookie-parser';
+import { config } from 'dotenv';
+import {app, server} from './socket/socket.js';
 
-const app = express();
+config();
+
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
@@ -19,8 +22,8 @@ app.get('/', (req, res) => {
 app.use("/api/auth", authRoutes)
 app.use("/api/messages", messageRoutes)
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   client.connect()
-  .then(() => console.log('Connected to the database'))
+  .then(() => console.log('Connected to the database, server running on port', PORT))
   .catch(err => console.error('Connection error', err.stack));
 });

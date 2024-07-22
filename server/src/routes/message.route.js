@@ -8,6 +8,8 @@ const router = express.Router();
 router.get('/chats', protectRoute, getOtherUsers);
 // https://localhost:5000/api/messages/:id
 router.get('/:id', protectRoute, getMessages);
+
+
 // https://localhost:5000/api/messages/send/:id
 router.post('/send/:id', protectRoute, sendMessage);
 
