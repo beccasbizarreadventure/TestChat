@@ -1,21 +1,5 @@
 import client from '../index.js';
 
-// const findPrivateChat = async (senderId, receiverId) => {
-//   try {
-//     const data = await client.query(
-//       `SELECT *
-//       FROM chats
-//       JOIN chat_participants ON chats.id = senderId.chat_id
-//       JOIN chat_messages ON chats.id = chat_messages.chat_id
-//       WHERE senderId.user_id = $1 AND receiverId.user_id = $2;`,
-//       [senderId, receiverId]
-//     );
-//     return data.rows[0];
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
 const findPrivateChat = async (senderId, receiverId) => {
   try {
     const data = await client.query(
@@ -37,29 +21,6 @@ const findPrivateChat = async (senderId, receiverId) => {
   }
 };
 
-const findChatWithMessages = async (senderId, receiverId) => {
-  try {
-    const data = await client.query(
-      `SELECT chat_messages.*, chats.*
-      FROM chat_messages
-      JOIN chats ON chat_messages.chat_id = chats.id
-      JOIN chat_participants ON chats.id = chat_participants.chat_id
-      WHERE chat_participants.user_id = $1
-        AND EXISTS (
-          SELECT 1
-          FROM chat_participants
-          WHERE chat_participants.chat_id = chats.id
-            AND chat_participants.user_id = $2
-        )
-      ORDER BY chat_messages.created_at ASC`,
-      [senderId, receiverId]
-    );
-    return data.rows;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 
 const createNewChat = async () => {
   try { 
@@ -73,21 +34,6 @@ const createNewChat = async () => {
   }
 };
 
-// const addChatParticipants = async (participants, chatId) => {
-//   for (const participant of participants) {
-//     try {
-//       const data = await client.query(
-//         `INSERT INTO chat_participants (user_id, chat_id) 
-//         VALUES ($1, $2) 
-//         RETURNING *`,
-//         [participant, chatId]
-//       );
-//       return data.rows[0];
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
-// };
 
 const addChatParticipants = async (participants, chatId) => {
   try {
@@ -107,4 +53,4 @@ const addChatParticipants = async (participants, chatId) => {
   }
 };
 
-export {findPrivateChat, createNewChat, addChatParticipants, findChatWithMessages};
+export {findPrivateChat, createNewChat, addChatParticipants};

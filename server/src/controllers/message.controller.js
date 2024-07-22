@@ -1,5 +1,6 @@
-import { findPrivateChat, createNewChat, addChatParticipants, findChatWithMessages } from "../db/queries/chats.queries.js";
-import { newChatMessage } from "../db/queries/messages.queries.js";
+import { findPrivateChat, createNewChat, addChatParticipants } from "../db/queries/chats.queries.js";
+import { newChatMessage, findChatWithMessages } from "../db/queries/messages.queries.js";
+import { getAllOtherUsers } from "../db/queries/users.queries.js";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -43,7 +44,7 @@ export const sendMessage = async (req, res) => {
   }
 };
 
-export const getMessages = async (req,res) => {
+export const getMessages = async (req, res) => {
   try {
     const {id: otherUserInChat } = req.params; // this loads the messages that the logged in user has with another specific user
     const senderId = req.body.user_id;
@@ -54,7 +55,20 @@ export const getMessages = async (req,res) => {
     }
     return res.status(200).json(chat);
   } catch(error) {
-    console.error("Error in sendMessage: ", error.message); 
+    console.error("Error in getMessages: ", error.message); 
+    res.status(500).json({error: "Internal server error"});
+  }
+};
+
+// to click message button next to a user name and open the convo
+export const getOtherUsers = async (req, res) => {
+  try {
+    const currentUser = req.body.user_id;
+    const users = await getAllOtherUsers(currentUser);
+
+    return res.status(200).json(users);
+  } catch(error) {
+    console.error("Error in getOtherUsers: ", error.message); 
     res.status(500).json({error: "Internal server error"});
   }
 };

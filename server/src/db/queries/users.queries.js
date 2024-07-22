@@ -40,4 +40,17 @@ const getUserById = async (id) => {
   }
 };
 
-export {registerUser, getUserByEmail, getUserById};
+const getAllOtherUsers = async (id) => {
+  try {
+    const data = await client.query(
+      `SELECT * FROM users 
+      WHERE NOT id = $1`,
+      [id]
+    );
+    return data.rows;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export {registerUser, getUserByEmail, getUserById, getAllOtherUsers};
