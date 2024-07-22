@@ -1,20 +1,21 @@
-import React from "react"
-import Home from "./components/Home"
-import Login from "./components/Login"
-import Register from "./components/Register"
-import { Route, Routes } from "react-router-dom";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import UserListPage from './pages/UserListPage';
+import ChatPage from './pages/ChatPage';
 
 function App() {
-
   return (
-    <div className="bg-slate-500 min-h-screen flex items-center justify-center">
     <Routes>
-      <Route path="/" element= {<Home/>} />
-      <Route path="/api/auth/register" element= {<Register/>} />
-      <Route path="/api/auth/login" element= {<Login/>} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/api/auth/login" element={<LoginPage />} />
+      <Route path="/api/auth/register" element={<RegisterPage />} />
+      <Route path="/api/messages/chats" element={<UserListPage />} />
+      <Route path="api/messages/:id" element={<ChatPage />} />
     </Routes>
-    </div>
-  )
+  );
 }
 
 export default App;
